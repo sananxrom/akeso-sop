@@ -1,0 +1,1273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Akeso MetaRx™ — Client Onboarding SOP</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ─── RESET ─────────────────────────────────────────── */
+*{box-sizing:border-box;margin:0;padding:0}
+
+/* ─── VARS ──────────────────────────────────────────── */
+:root{
+  --or:#F06027; --dk:#1a1718; --card:#242021; --card2:#2c2829;
+  --rule:#3a3536; --wh:#F5F3F0; --gr:#888; --gr2:#555;
+  --gn:#3d9970; --ye:#e8a020; --rd:#c0392b; --bl:#2980b9;
+  --gate-bg:#2a1f0a;
+  --a-bg:#1a2e24; --a-br:#3d9970;
+  --b-bg:#2e2510; --b-br:#e8a020;
+  --c-bg:#2e1a1a; --c-br:#c0392b;
+  --nre-bg:#1e1e10;
+}
+
+body{background:var(--dk);color:var(--wh);font-family:'Syne',sans-serif;}
+
+/* ─── LANG SYSTEM (CSS-only, no inline style override) ─ */
+/* default: bilingual — show both */
+.zh{display:inline}
+.en{display:inline}
+/* zh-only mode */
+body.lang-zh .en{display:none!important}
+body.lang-zh .zh{display:inline!important}
+/* en-only mode */
+body.lang-en .zh{display:none!important}
+body.lang-en .en{display:inline!important}
+/* block-level zh/en (used in detail lists) */
+span.zh,span.en{display:inline}
+.zh-b{display:block}
+.en-b{display:block}
+body.lang-zh .en-b{display:none!important}
+body.lang-en .zh-b{display:none!important}
+/* SVG tspan lang — controlled via class on SVG parent */
+body.lang-zh .svg-en{display:none}
+body.lang-en .svg-zh{display:none}
+
+/* ─── HEADER ─────────────────────────────────────────── */
+.hdr{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 36px;border-bottom:1px solid var(--rule);
+  background:var(--dk);position:sticky;top:0;z-index:600;
+}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-box{width:30px;height:30px;background:var(--or);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff}
+.logo-name{font-size:15px;font-weight:700}
+.logo-sub{font-size:9px;color:var(--gr);font-family:'DM Mono',monospace;letter-spacing:.1em}
+.hdr-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.conf{font-family:'DM Mono',monospace;font-size:9px;color:var(--gr);border:1px solid var(--rule);padding:4px 8px;letter-spacing:.12em}
+
+/* ─── TOGGLE GROUPS ──────────────────────────────────── */
+.tg{display:flex;align-items:center;border:1px solid var(--rule);overflow:hidden}
+.tg-btn{
+  padding:5px 12px;font-size:10px;font-family:'DM Mono',monospace;
+  background:transparent;color:var(--gr);border:none;cursor:pointer;
+  transition:background .15s,color .15s;letter-spacing:.06em;white-space:nowrap;
+}
+.tg-btn.active{background:var(--or);color:#fff}
+.tg-btn:hover:not(.active){background:var(--card2);color:var(--wh)}
+.tg-btn.blue.active{background:var(--bl)}
+.tg-btn.green.active{background:var(--gn)}
+
+/* ─── TOOLBAR ────────────────────────────────────────── */
+.toolbar{
+  display:flex;align-items:center;gap:8px;padding:8px 36px;
+  border-bottom:1px solid #2a2627;background:#1e1b1c;flex-wrap:wrap;
+}
+.tb-btn{
+  padding:4px 12px;font-size:10px;font-family:'DM Mono',monospace;
+  background:transparent;color:var(--gr);border:1px solid var(--rule);
+  cursor:pointer;border-radius:2px;letter-spacing:.06em;
+  transition:background .15s,color .15s,border-color .15s;
+}
+.tb-btn:hover{background:var(--card2);color:var(--wh);border-color:var(--gr)}
+.tb-sep{width:1px;height:20px;background:var(--rule);margin:0 4px}
+.tb-zoom{font-family:'DM Mono',monospace;font-size:10px;color:var(--gr);padding:0 6px;min-width:40px;text-align:center}
+
+/* ─── LEGEND ─────────────────────────────────────────── */
+.legend{
+  display:flex;gap:16px;padding:8px 36px;
+  border-bottom:1px solid #2a2627;background:#1c1a1b;flex-wrap:wrap;
+}
+.leg{display:flex;align-items:center;gap:6px;font-size:10px;font-family:'DM Mono',monospace;color:var(--gr)}
+.leg-dot{width:9px;height:9px;border-radius:2px;flex-shrink:0}
+.leg-dia{width:9px;height:9px;transform:rotate(45deg);flex-shrink:0}
+
+/* ─── VIEWS ──────────────────────────────────────────── */
+#view-node{display:block}
+#view-doc{display:none}
+body.view-doc #view-node{display:none}
+body.view-doc #view-doc{display:block}
+
+/* ─── NODE VIEW CANVAS ───────────────────────────────── */
+.canvas{padding:50px 36px 80px;overflow-x:auto}
+.flow{
+  display:flex;flex-direction:column;align-items:center;gap:0;
+  min-width:1600px;
+  transform-origin:top center;
+  transition:transform .2s;
+}
+
+/* ─── NODE BASE ──────────────────────────────────────── */
+.node{
+  border-radius:4px;position:relative;
+  cursor:pointer;transition:filter .15s,transform .1s;
+  user-select:none;
+}
+.node:hover{filter:brightness(1.15);transform:translateY(-1px)}
+.node.open{filter:brightness(1.1)}
+
+.ni{padding:14px 20px}/* node-inner */
+.ntag{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.14em;font-weight:600;margin-bottom:5px;text-transform:uppercase}
+/* PRIMARY = big title, SECONDARY = small subtitle */
+.npri{font-size:15px;font-weight:700;line-height:1.2;margin-bottom:2px}
+.nsec{font-size:11px;font-family:'DM Mono',monospace;color:var(--gr);line-height:1.4}
+.nown{font-size:10px;font-family:'DM Mono',monospace;margin-top:7px;font-weight:600}
+.nhint{position:absolute;bottom:5px;right:9px;font-size:9px;font-family:'DM Mono',monospace;color:var(--gr2)}
+
+/* NODE TYPES */
+.n-start{background:var(--or);width:280px;border-radius:40px}
+.n-start .npri{color:#fff;font-size:17px;text-align:center}
+.n-start .nsec{color:rgba(255,255,255,.7);text-align:center}
+.n-gate{background:var(--gate-bg);border:2px solid var(--or);width:500px}
+.n-gate .ntag{color:var(--or)}
+.n-action{background:var(--card);border:1.5px solid var(--rule);width:420px}
+.n-action .ntag{color:var(--gr)}
+.n-decision{background:#1a1a2e;border:2px solid var(--bl);width:320px;clip-path:polygon(50% 0%,100% 50%,50% 100%,0% 50%);min-height:110px;display:flex;align-items:center;justify-content:center}
+.n-decision .ni{text-align:center;padding:0}
+.n-decision .npri{font-size:13px}
+.n-decision .nsec{font-size:10px}
+.n-decision:hover{clip-path:polygon(50% 0%,100% 50%,50% 100%,0% 50%);transform:scale(1.03)}
+.n-reject{background:#2e1a1a;border:1.5px solid var(--rd);width:200px}
+.n-reject .ntag{color:var(--rd)}
+.n-reject .npri{color:var(--rd)}
+.n-a{background:var(--a-bg);border:2px solid var(--a-br);width:420px}
+.n-a .ntag{color:var(--gn)} .n-a .nown{color:var(--gn)}
+.n-b{background:var(--b-bg);border:2px solid var(--b-br);width:420px}
+.n-b .ntag{color:var(--ye)} .n-b .nown{color:var(--ye)}
+.n-c{background:var(--c-bg);border:2px solid var(--c-br);width:420px}
+.n-c .ntag{color:var(--rd)} .n-c .nown{color:var(--rd)}
+.n-nre{background:var(--nre-bg);border:1.5px solid var(--ye);width:420px}
+.n-nre .ntag{color:var(--ye)} .n-nre .nown{color:var(--ye)}
+.n-end{background:var(--a-bg);border:2px solid var(--gn);width:420px}
+.n-end .ntag{color:var(--gn)} .n-end .nown{color:var(--gn)}
+.n-monthly{background:var(--gate-bg);border:2px solid var(--or);width:500px}
+.n-monthly .ntag{color:var(--or)}
+
+/* ─── DETAIL PANEL ───────────────────────────────────── */
+.det{display:none;border-top:1px solid rgba(255,255,255,.08);padding:12px 20px 14px;background:rgba(0,0,0,.25)}
+.node.open .det{display:block}
+.det-sec{margin-bottom:10px}
+.det-sec:last-child{margin-bottom:0}
+.det-lbl{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.14em;color:var(--or);text-transform:uppercase;margin-bottom:5px}
+.det-lbl.red{color:var(--rd)} .det-lbl.ye{color:var(--ye)}
+.det-ul{list-style:none;display:flex;flex-direction:column;gap:3px}
+.det-ul li{font-size:11px;font-family:'DM Mono',monospace;color:#ccc;display:flex;align-items:flex-start;gap:7px;padding:5px 8px;background:rgba(0,0,0,.2);border-radius:2px}
+.det-ul li::before{content:'→';color:var(--or);flex-shrink:0}
+.det-ul li.bad::before{content:'✕';color:var(--rd)}
+.det-ul li.good::before{content:'✓';color:var(--gn)}
+.det-ul li.warn::before{content:'⚠';color:var(--ye)}
+.det-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.det-btn{display:inline-flex;align-items:center;gap:5px;margin-top:8px;padding:5px 12px;background:transparent;border:1px solid var(--rule);color:var(--gr);font-family:'DM Mono',monospace;font-size:10px;cursor:pointer;border-radius:2px;letter-spacing:.06em;transition:background .15s,color .15s,border-color .15s}
+.det-btn:hover{background:var(--card2);color:var(--wh);border-color:var(--gr)}
+.det-btn.or{border-color:var(--or);color:var(--or)}
+.det-btn.or:hover{background:rgba(240,96,39,.15)}
+
+/* NRE POPUP BUTTON */
+.nre-popup-btn{display:inline-flex;align-items:center;gap:5px;margin-top:8px;padding:5px 12px;background:rgba(232,160,32,.1);border:1px solid var(--ye);color:var(--ye);font-family:'DM Mono',monospace;font-size:10px;cursor:pointer;border-radius:2px;letter-spacing:.06em;transition:background .15s}
+.nre-popup-btn:hover{background:rgba(232,160,32,.2)}
+
+/* ─── ARROWS ─────────────────────────────────────────── */
+.av{display:flex;flex-direction:column;align-items:center}
+.av .al{width:2px;height:34px}
+.av .ah{width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:8px solid}
+.av.grey .al{background:var(--gr2)} .av.grey .ah{border-top-color:var(--gr2)}
+.av.green .al{background:var(--gn)} .av.green .ah{border-top-color:var(--gn)}
+.av.yellow .al{background:var(--ye)} .av.yellow .ah{border-top-color:var(--ye)}
+.av.red .al{background:var(--rd)} .av.red .ah{border-top-color:var(--rd)}
+.av.orange .al{background:var(--or)} .av.orange .ah{border-top-color:var(--or)}
+
+/* ─── SPLIT ROW ──────────────────────────────────────── */
+.split-row{display:flex;align-items:flex-start;gap:0;width:100%;justify-content:center}
+.split-col{display:flex;flex-direction:column;align-items:center}
+.split-lbl{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.12em;font-weight:600;padding:4px 14px;border-radius:2px;margin-bottom:10px;text-align:center}
+.split-lbl.a{color:var(--gn);background:rgba(61,153,112,.1);border:1px solid rgba(61,153,112,.3)}
+.split-lbl.b{color:var(--ye);background:rgba(232,160,32,.1);border:1px solid rgba(232,160,32,.3)}
+.split-lbl.c{color:var(--rd);background:rgba(192,57,43,.1);border:1px solid rgba(192,57,43,.3)}
+.split-svg{display:block;overflow:visible}
+
+/* ─── NRE MODAL ──────────────────────────────────────── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:900;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:var(--card);border:1px solid var(--rule);border-top:3px solid var(--ye);width:700px;max-width:90vw;max-height:80vh;overflow-y:auto;border-radius:4px}
+.modal-hdr{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--rule)}
+.modal-title{font-size:14px;font-weight:700;color:var(--wh)}
+.modal-sub{font-size:10px;font-family:'DM Mono',monospace;color:var(--ye);margin-top:2px}
+.modal-close{background:transparent;border:1px solid var(--rule);color:var(--gr);font-family:'DM Mono',monospace;font-size:11px;padding:4px 10px;cursor:pointer;border-radius:2px}
+.modal-close:hover{background:var(--card2);color:var(--wh)}
+.modal-body{padding:16px 20px}
+.nre-table{width:100%;border-collapse:collapse;font-family:'DM Mono',monospace;font-size:11px}
+.nre-table th{padding:8px 12px;text-align:left;font-size:9px;letter-spacing:.08em;border-bottom:1px solid var(--rule);color:var(--gr);font-weight:500}
+.nre-table td{padding:10px 12px;border-bottom:1px solid var(--rule);color:var(--wh)}
+.nre-table tr:last-child td{border-bottom:none}
+.nre-table tr:hover td{background:var(--card2)}
+.nre-fee{color:var(--ye);font-weight:600}
+.nre-free{color:var(--gn);font-weight:600}
+.ip-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+.ip-card{background:var(--dk);padding:10px;border-left:3px solid var(--or)}
+.ip-label{font-size:9px;font-family:'DM Mono',monospace;color:var(--or);margin-bottom:4px;letter-spacing:.1em}
+.ip-zh{font-size:12px;color:var(--wh);margin-bottom:2px}
+.ip-en{font-size:10px;font-family:'DM Mono',monospace;color:var(--gr)}
+
+/* ─── DOC VIEW ────────────────────────────────────────── */
+#view-doc{padding:48px 48px 80px;max-width:1400px;margin:0 auto}
+.doc-title{margin-bottom:40px}
+.doc-title h1{font-size:34px;font-weight:800;color:var(--wh);line-height:1.1}
+.doc-title h1 span{color:var(--or)}
+.doc-title p{font-size:13px;color:var(--gr);font-family:'DM Mono',monospace;margin-top:8px;letter-spacing:.05em}
+.sec-lbl{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.2em;color:var(--gr2);margin-bottom:10px;text-transform:uppercase;display:flex;align-items:center;gap:12px}
+.sec-lbl::after{content:'';flex:1;height:1px;background:var(--rule)}
+.gate-d{background:var(--dk);border:1px solid var(--rule);border-left:4px solid var(--or);padding:18px 22px;margin-bottom:4px;position:relative;cursor:pointer;transition:background .15s}
+.gate-d:hover{background:var(--card2)}
+.gate-d.open .gde{display:block}
+.gate-num{font-family:'DM Mono',monospace;font-size:10px;color:var(--or);letter-spacing:.15em;margin-bottom:3px}
+.gate-tzh{font-size:17px;font-weight:700;color:var(--wh);margin-bottom:2px}
+.gate-ten{font-size:11px;color:var(--gr);font-family:'DM Mono',monospace;margin-bottom:12px}
+.gate-meta{display:flex;gap:18px;flex-wrap:wrap}
+.gmi label{font-size:9px;font-family:'DM Mono',monospace;color:var(--gr);letter-spacing:.1em;text-transform:uppercase;display:block}
+.gmi span{font-size:13px;font-weight:600;color:var(--wh)}
+.gexp{position:absolute;right:18px;top:18px;font-size:11px;color:var(--gr);font-family:'DM Mono',monospace;transition:transform .2s}
+.gate-d.open .gexp{transform:rotate(180deg)}
+.gde{display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--rule)}
+.crit-list{list-style:none;display:flex;flex-direction:column;gap:5px}
+.crit-list li{font-size:11px;font-family:'DM Mono',monospace;color:var(--gr);display:flex;align-items:flex-start;gap:7px;padding:5px 9px;background:var(--dk)}
+.crit-list li::before{content:'→';color:var(--or);flex-shrink:0}
+.crit-list li.reject::before{color:var(--rd);content:'✕'}
+.crit-list li.pass::before{color:var(--gn);content:'✓'}
+.mat{width:100%;border-collapse:collapse;font-family:'DM Mono',monospace;font-size:11px}
+.mat th{padding:8px 12px;text-align:center;border:1px solid var(--rule);background:var(--dk);font-size:10px;font-weight:600;letter-spacing:.06em}
+.mat th.ax{color:var(--or)}
+.mat td{padding:9px 12px;text-align:center;border:1px solid var(--rule)}
+.mat td:hover{background:var(--card2)}
+.cgo{color:var(--gn);font-weight:600} .cwarn{color:var(--ye);font-weight:600} .cstop{color:var(--rd);font-weight:600}
+.csub{display:block;font-size:9px;color:var(--gr);margin-top:1px}
+.tracks{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;margin-bottom:4px}
+.track{border:1px solid var(--rule);overflow:hidden}
+.track-hdr{padding:14px 18px}
+.track-a .track-hdr{background:#1a2e24;border-bottom:2px solid var(--gn)}
+.track-b .track-hdr{background:#2e2510;border-bottom:2px solid var(--ye)}
+.track-c .track-hdr{background:#2e1a1a;border-bottom:2px solid var(--rd)}
+.tbadge{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.14em;padding:2px 7px;width:fit-content;font-weight:500;margin-bottom:4px}
+.track-a .tbadge{background:rgba(61,153,112,.2);color:var(--gn)}
+.track-b .tbadge{background:rgba(232,160,32,.2);color:var(--ye)}
+.track-c .tbadge{background:rgba(192,57,43,.2);color:var(--rd)}
+.tname-zh{font-size:15px;font-weight:700;color:var(--wh)}
+.tname-en{font-size:10px;font-family:'DM Mono',monospace;color:var(--gr)}
+.tsteps{padding:14px 18px;background:var(--card);display:flex;flex-direction:column;gap:2px}
+.step{display:flex;gap:10px;align-items:flex-start;padding:7px 9px;background:var(--dk)}
+.step-num{font-family:'DM Mono',monospace;font-size:9px;color:var(--gr);min-width:14px;padding-top:1px}
+.step-zh{font-size:12px;font-weight:600;color:var(--wh);line-height:1.3}
+.step-en{font-size:10px;font-family:'DM Mono',monospace;color:var(--gr);margin-top:1px}
+.step-own{font-size:9px;font-family:'DM Mono',monospace;color:var(--or);margin-top:3px}
+.step-gate-d{background:var(--dk);border-left:3px solid var(--or);padding:7px 9px;margin:5px 0}
+.step-gate-d .step-zh{color:var(--or)}
+.step-gate-red{background:rgba(192,57,43,.1);border-left:3px solid var(--rd);padding:7px 9px;margin:5px 0}
+.step-gate-red .step-zh{color:var(--rd)}
+.ttl{padding:9px 18px;background:var(--dk);display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--rule)}
+.ttl-lbl{font-family:'DM Mono',monospace;font-size:9px;color:var(--gr);letter-spacing:.1em}
+.ttl-val{font-family:'DM Mono',monospace;font-size:11px;font-weight:500}
+.track-a .ttl-val{color:var(--gn)} .track-b .ttl-val{color:var(--ye)} .track-c .ttl-val{color:var(--rd)}
+.arr-down{display:flex;align-items:center;justify-content:center;height:28px;position:relative}
+.arr-down::before{content:'';position:absolute;left:50%;top:0;bottom:0;width:1px;background:var(--rule);transform:translateX(-50%)}
+.arr-down span{background:var(--dk);padding:0 7px;position:relative;z-index:1;font-size:11px;color:var(--gr2);font-family:'DM Mono',monospace}
+.ownership-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;margin-bottom:4px}
+.own-card{background:var(--card);border:1px solid var(--rule);padding:14px}
+.own-stage{font-size:9px;font-family:'DM Mono',monospace;color:var(--gr);letter-spacing:.08em;margin-bottom:6px;text-transform:uppercase}
+.own-zh{font-size:13px;font-weight:700;color:var(--wh);margin-bottom:2px}
+.own-en{font-size:9px;font-family:'DM Mono',monospace;color:var(--gr)}
+.own-who{margin-top:8px;font-size:10px;font-family:'DM Mono',monospace;color:var(--or);border-top:1px solid var(--rule);padding-top:6px}
+.kill-wrap{background:rgba(192,57,43,.06);border:1px solid rgba(192,57,43,.3);padding:18px 22px;margin-bottom:4px}
+.kill-title{font-size:12px;font-weight:700;color:var(--rd);margin-bottom:12px;font-family:'DM Mono',monospace;letter-spacing:.05em}
+.kill-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.kill-item{background:var(--dk);padding:9px 12px;border-left:3px solid var(--rd)}
+.kill-trigger{font-size:12px;font-weight:600;color:var(--wh);margin-bottom:2px}
+.kill-action{font-size:10px;font-family:'DM Mono',monospace;color:var(--gr)}
+.principles{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-bottom:4px}
+.principle{background:var(--card);border:1px solid var(--rule);border-top:2px solid var(--or);padding:14px}
+.principle-num{font-family:'DM Mono',monospace;font-size:10px;color:var(--or);margin-bottom:5px}
+.principle-zh{font-size:13px;font-weight:700;margin-bottom:2px}
+.principle-en{font-size:10px;font-family:'DM Mono',monospace;color:var(--gr)}
+.mat-wrap{background:var(--card);border:1px solid var(--rule);padding:20px;margin-bottom:4px}
+.mat-title{font-size:12px;font-weight:700;margin-bottom:14px;color:var(--wh)}
+.mat-title span{font-size:10px;font-family:'DM Mono',monospace;color:var(--gr);font-weight:400;margin-left:7px}
+.route-split{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;margin-bottom:4px}
+.route-item{padding:11px 14px;border:1px solid var(--rule);display:flex;flex-direction:column;gap:3px;background:var(--card)}
+.route-type{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.1em}
+.route-type.a{color:var(--gn)} .route-type.b{color:var(--ye)} .route-type.c{color:var(--rd)}
+.route-label{font-size:12px;font-weight:700}
+.route-desc{font-size:10px;font-family:'DM Mono',monospace;color:var(--gr)}
+.nre-tw{background:var(--card);border:1px solid var(--rule);padding:20px;margin-bottom:4px}
+
+/* footer */
+footer{border-top:1px solid var(--rule);padding:12px 36px;display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:10px;color:var(--gr2)}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════ HEADER ═══════════════════════ -->
+<div class="hdr">
+  <div class="logo">
+    <div class="logo-box">诺</div>
+    <div>
+      <div class="logo-name">AKESO™ MetaRx™</div>
+      <div class="logo-sub">CLIENT ONBOARDING SOP · LENS BUSINESS</div>
+    </div>
+  </div>
+  <div class="hdr-right">
+    <!-- VIEW SWITCHER -->
+    <div class="tg">
+      <button class="tg-btn blue active" id="btn-node" onclick="setView('node')">
+        ⬡ <span class="zh">节点视图</span><span class="en">Node Flow</span>
+      </button>
+      <button class="tg-btn blue" id="btn-doc" onclick="setView('doc')">
+        ☰ <span class="zh">文档视图</span><span class="en">Doc View</span>
+      </button>
+    </div>
+    <!-- LANG TOGGLE -->
+    <div class="tg">
+      <button class="tg-btn" id="btn-zh" onclick="setLang('zh')">中文</button>
+      <button class="tg-btn active" id="btn-both" onclick="setLang('both')">双语</button>
+      <button class="tg-btn" id="btn-en" onclick="setLang('en')">EN</button>
+    </div>
+    <div class="conf">CONFIDENTIAL 机密</div>
+  </div>
+</div>
+
+<!-- ═══════════════════ TOOLBAR (node view only) ════ -->
+<div class="toolbar" id="toolbar-node">
+  <button class="tb-btn" onclick="expandAll()">
+    ▾ <span class="zh">展开全部</span><span class="en">Expand All</span>
+  </button>
+  <button class="tb-btn" onclick="collapseAll()">
+    ▸ <span class="zh">折叠全部</span><span class="en">Collapse All</span>
+  </button>
+  <div class="tb-sep"></div>
+  <button class="tb-btn" onclick="zoom(-0.1)">− <span class="zh">缩小</span><span class="en">Zoom Out</span></button>
+  <div class="tb-zoom" id="zoom-label">100%</div>
+  <button class="tb-btn" onclick="zoom(0.1)">+ <span class="zh">放大</span><span class="en">Zoom In</span></button>
+  <button class="tb-btn" onclick="resetZoom()"><span class="zh">重置</span><span class="en">Reset</span></button>
+  <div class="tb-sep"></div>
+  <button class="tb-btn" onclick="showNRE()">
+    ¥ <span class="zh">NRE 收费参考</span><span class="en">NRE Fee Reference</span>
+  </button>
+</div>
+
+<!-- LEGEND -->
+<div class="legend">
+  <div class="leg"><div class="leg-dot" style="background:var(--or)"></div><span class="zh">触发/开始</span><span class="en">Start/Trigger</span></div>
+  <div class="leg"><div class="leg-dot" style="background:var(--card);border:1.5px solid #555"></div><span class="zh">操作步骤</span><span class="en">Action Step</span></div>
+  <div class="leg"><div class="leg-dia" style="background:#1a1a2e;border:2px solid var(--bl)"></div><span class="zh">决策节点</span><span class="en">Decision</span></div>
+  <div class="leg"><div class="leg-dot" style="background:var(--gate-bg);border:2px solid var(--or)"></div><span class="zh">关卡门控</span><span class="en">Gate</span></div>
+  <div class="leg"><div class="leg-dot" style="background:var(--a-bg);border:2px solid var(--gn)"></div><span class="zh">生产通道 Path A</span><span class="en">Production Track Path A</span></div>
+  <div class="leg"><div class="leg-dot" style="background:var(--b-bg);border:2px solid var(--ye)"></div><span class="zh">混合通道 Path B</span><span class="en">Hybrid Track Path B</span></div>
+  <div class="leg"><div class="leg-dot" style="background:var(--c-bg);border:2px solid var(--rd)"></div><span class="zh">研发通道 Path C</span><span class="en">R&D Track Path C</span></div>
+</div>
+
+<!-- ═══════════════════ NRE MODAL ═══════════════════ -->
+<div class="modal-overlay" id="nre-modal" onclick="closeNRE(event)">
+  <div class="modal">
+    <div class="modal-hdr">
+      <div>
+        <div class="modal-title"><span class="zh">NRE 收费参考</span><span class="en">NRE Fee Reference</span></div>
+        <div class="modal-sub"><span class="zh">以人民币计 · 第 1 级降费需 CTO 书面批准</span><span class="en">In CNY ¥ · Tier 1 fee reduction requires CTO written approval</span></div>
+      </div>
+      <button class="modal-close" onclick="closeNREBtn()">✕ <span class="zh">关闭</span><span class="en">Close</span></button>
+    </div>
+    <div class="modal-body">
+      <table class="nre-table">
+        <thead>
+          <tr>
+            <th><span class="zh">阶段</span><span class="en">Stage</span></th>
+            <th><span class="zh">适用</span><span class="en">Applies To</span></th>
+            <th><span class="zh">费用 (CNY)</span><span class="en">Fee (CNY)</span></th>
+            <th><span class="zh">备注</span><span class="en">Notes</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="zh">初步可行性</span><span class="en">Preliminary Feasibility</span></td>
+            <td><span class="zh">所有类型</span><span class="en">All types</span></td>
+            <td class="nre-free">¥0 — <span class="zh">免费</span><span class="en">Free</span></td>
+            <td style="font-size:10px;color:var(--gr)"><span class="zh">仅高层次，无模拟/设计/打样</span><span class="en">High-level only. No simulation, design, or sample.</span></td>
+          </tr>
+          <tr>
+            <td><span class="zh">有限可行性（B 类）</span><span class="en">Mini Feasibility (Type B)</span></td>
+            <td>Type B Hybrid</td>
+            <td class="nre-fee">¥50,000 – ¥150,000</td>
+            <td style="font-size:10px;color:var(--gr)"><span class="zh">书面总结 + 路径建议</span><span class="en">Written summary + path recommendation</span></td>
+          </tr>
+          <tr>
+            <td><span class="zh">全研发（C 类）</span><span class="en">Full R&D (Type C)</span></td>
+            <td>Type C</td>
+            <td class="nre-fee">¥300,000 – ¥1,500,000+</td>
+            <td style="font-size:10px;color:var(--gr)"><span class="zh">仿真、设计、测试、验证</span><span class="en">Simulation, design, testing, validation</span></td>
+          </tr>
+          <tr>
+            <td><span class="zh">打样生产</span><span class="en">Sample Production</span></td>
+            <td><span class="zh">所有类型</span><span class="en">All types</span></td>
+            <td class="nre-fee">¥80,000 – ¥300,000</td>
+            <td style="font-size:10px;color:var(--gr)"><span class="zh">始终收费，可抵首次生产订单</span><span class="en">Always charged. Adjustable against first production order.</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="ip-grid">
+        <div class="ip-card">
+          <div class="ip-label">IP — <span class="zh">客户出资</span><span class="en">CLIENT FUNDED</span></div>
+          <div class="ip-zh"><span class="zh">客户拥有 IP，诺瞳保留制造权</span><span class="en">Client owns IP, Akeso retains manufacturing rights</span></div>
+        </div>
+        <div class="ip-card">
+          <div class="ip-label">IP — <span class="zh">共同投资</span><span class="en">CO-INVESTED</span></div>
+          <div class="ip-zh"><span class="zh">联合 IP 或诺瞳授权模式</span><span class="en">Joint IP or Akeso licensing model</span></div>
+        </div>
+        <div class="ip-card">
+          <div class="ip-label">IP — <span class="zh">诺瞳出资</span><span class="en">AKESO FUNDED</span></div>
+          <div class="ip-zh"><span class="zh">诺瞳拥有，客户获授权协议</span><span class="en">Akeso owns, client gets licensing agreement</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     NODE VIEW
+════════════════════════════════════════════════════ -->
+<div id="view-node">
+<div class="canvas">
+<div class="flow" id="flow-canvas">
+
+<!-- START -->
+<div class="node n-start" onclick="toggle(this)">
+  <div class="ni" style="text-align:center;padding:12px 36px">
+    <div class="npri"><span class="zh">新客户询盘</span><span class="en">New Client Inquiry</span></div>
+    <div class="nsec"><span class="zh">任何来源 — 销售、BD、CEO/CTO</span><span class="en">Any source — Sales, BD, CEO/CTO</span></div>
+  </div>
+  <div class="det">
+    <ul class="det-ul">
+      <li><span class="zh">无论谁引荐，均走相同流程</span><span class="en">Same process regardless of who introduces the client</span></li>
+      <li><span class="zh">CEO/CTO 引荐不改变 NRE 费用</span><span class="en">CEO/CTO referrals do not change NRE costs</span></li>
+      <li><span class="zh">没有 DRI 不得启动项目</span><span class="en">No project starts without a defined DRI</span></li>
+    </ul>
+  </div>
+</div>
+
+<div class="av grey"><div class="al"></div><div class="ah"></div></div>
+
+<!-- GATE 0 -->
+<div class="node n-gate" onclick="toggle(this)">
+  <div class="ni">
+    <div class="ntag"><span class="zh">关卡 0 · 销售所有 · 3 个工作日内完成</span><span class="en">GATE 0 · SALES OWNED · COMPLETE WITHIN 3 BUSINESS DAYS</span></div>
+    <div class="npri"><span class="zh">预资格审查</span><span class="en">Pre-Qualification</span></div>
+    <div class="nsec"><span class="zh">填写入驻表格，分配类型与级别</span><span class="en">Fill intake form, assign Type + Tier — mandatory all inquiries</span></div>
+    <div class="nhint">▾ <span class="zh">点击展开</span><span class="en">click to expand</span></div>
+  </div>
+  <div class="det">
+    <div class="det-2">
+      <div class="det-sec">
+        <div class="det-lbl"><span class="zh">必填项目</span><span class="en">Intake Checklist</span></div>
+        <ul class="det-ul">
+          <li><span class="zh">客户背景与公司信息</span><span class="en">Client background + company info</span></li>
+          <li><span class="zh">产品需求描述</span><span class="en">Product requirement description</span></li>
+          <li><span class="zh">技术就绪度 → 分类 A/B/C</span><span class="en">Technical readiness → Type A/B/C</span></li>
+          <li><span class="zh">体量潜力 → 分级 1/2/3</span><span class="en">Volume potential → Tier 1/2/3</span></li>
+          <li><span class="zh">NRE 付意愿 是/否</span><span class="en">NRE willingness Y/N</span></li>
+          <li><span class="zh">客方决策人确认</span><span class="en">Decision-maker identified</span></li>
+          <li><span class="zh">预期时间线</span><span class="en">Expected timeline</span></li>
+        </ul>
+      </div>
+      <div class="det-sec">
+        <div class="det-lbl red"><span class="zh">自动拒绝 — 无需上报</span><span class="en">Auto-Reject — No Escalation</span></div>
+        <ul class="det-ul">
+          <li class="bad">Type C + Tier 3</li>
+          <li class="bad"><span class="zh">C 类 + 不愿支付 NRE</span><span class="en">Type C + NRE unwilling</span></li>
+          <li class="bad"><span class="zh">体量 &lt;¥100万，无战略标记</span><span class="en">Volume &lt;¥1M, no strategic flag</span></li>
+          <li class="bad"><span class="zh">客方无决策人</span><span class="en">No decision-maker on client side</span></li>
+          <li class="bad"><span class="zh">要求 2 周内交付（无前期沟通）</span><span class="en">Expects delivery &lt;2 weeks, no prior engagement</span></li>
+          <li class="bad"><span class="zh">超出 MetaRx™ 业务范围</span><span class="en">Outside MetaRx™ scope</span></li>
+        </ul>
+      </div>
+    </div>
+    <button class="det-btn or">📋 <span class="zh">预资格审查表（即将上线）</span><span class="en">Pre-Qualification Intake Form (coming soon)</span></button>
+  </div>
+</div>
+
+<div class="av grey"><div class="al"></div><div class="ah"></div></div>
+
+<!-- CLASSIFICATION -->
+<div class="node n-action" onclick="toggle(this)">
+  <div class="ni">
+    <div class="ntag"><span class="zh">分类评定</span><span class="en">CLASSIFICATION</span></div>
+    <div class="npri"><span class="zh">分配客户类型 + 级别</span><span class="en">Assign Client Type + Tier</span></div>
+    <div class="nsec"><span class="zh">Type (A/B/C) × Tier (1/2/3) — 两个维度，缺一不可</span><span class="en">Type (A/B/C) × Tier (1/2/3) — both dimensions mandatory</span></div>
+    <div class="nhint">▾ <span class="zh">点击查看矩阵</span><span class="en">click for matrix</span></div>
+  </div>
+  <div class="det">
+    <div class="det-2">
+      <div class="det-sec">
+        <div class="det-lbl"><span class="zh">技术就绪度（轴 1）</span><span class="en">Technical Readiness (Axis 1)</span></div>
+        <ul class="det-ul">
+          <li class="good"><strong>Type A</strong> — <span class="zh">生产就绪：规格清晰，方案成熟</span><span class="en">Production Ready: clear specs, proven design</span></li>
+          <li class="warn"><strong>Type B</strong> — <span class="zh">待优化：内部评审后路由，非快速通道</span><span class="en">Needs optimization: internal review first, NOT fast-track</span></li>
+          <li class="bad"><strong>Type C</strong> — <span class="zh">概念阶段：无清晰规格，需研发介入</span><span class="en">Concept stage: no clear specs, needs R&D</span></li>
+        </ul>
+      </div>
+      <div class="det-sec">
+        <div class="det-lbl"><span class="zh">客户价值（轴 2）</span><span class="en">Client Value (Axis 2)</span></div>
+        <ul class="det-ul">
+          <li class="good"><strong>Tier 1</strong> — <span class="zh">战略级：年体量 ≥¥1 亿</span><span class="en">Strategic: ≥¥100M annual volume</span></li>
+          <li class="warn"><strong>Tier 2</strong> — <span class="zh">成长级：¥100 万–¥1 亿</span><span class="en">Growth: ¥1M–¥100M annual volume</span></li>
+          <li class="bad"><strong>Tier 3</strong> — <span class="zh">机会型：&lt;¥100 万</span><span class="en">Opportunistic: &lt;¥1M annual volume</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SPLIT SVG -->
+<svg class="split-svg" width="1600" height="80" viewBox="0 0 1600 80">
+  <defs>
+    <marker id="ma" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3z" fill="#3d9970"/></marker>
+    <marker id="mb" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3z" fill="#e8a020"/></marker>
+    <marker id="mc" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3z" fill="#c0392b"/></marker>
+  </defs>
+  <line x1="800" y1="0" x2="800" y2="30" stroke="#555" stroke-width="2"/>
+  <line x1="280" y1="30" x2="1320" y2="30" stroke="#555" stroke-width="1.5"/>
+  <line x1="280" y1="30" x2="280" y2="72" stroke="#3d9970" stroke-width="2" marker-end="url(#ma)"/>
+  <line x1="800" y1="30" x2="800" y2="72" stroke="#e8a020" stroke-width="2" marker-end="url(#mb)"/>
+  <line x1="1320" y1="30" x2="1320" y2="72" stroke="#c0392b" stroke-width="2" marker-end="url(#mc)"/>
+  <text x="280" y="22" text-anchor="middle" font-family="DM Mono,monospace" font-size="11" fill="#3d9970" font-weight="600">TYPE A</text>
+  <text x="800" y="22" text-anchor="middle" font-family="DM Mono,monospace" font-size="11" fill="#e8a020" font-weight="600">TYPE B</text>
+  <text x="1320" y="22" text-anchor="middle" font-family="DM Mono,monospace" font-size="11" fill="#c0392b" font-weight="600">TYPE C</text>
+</svg>
+
+<!-- THREE TRACKS -->
+<div class="split-row">
+
+<!-- ── PATH A ── -->
+<div class="split-col" style="width:520px">
+  <div class="split-lbl a"><span class="zh">生产通道</span><span class="en">PRODUCTION TRACK</span></div>
+
+  <div class="node n-a" onclick="toggle(this)">
+    <div class="ni">
+      <div class="ntag">A1</div>
+      <div class="npri"><span class="zh">需求录入</span><span class="en">Requirement Intake</span></div>
+      <div class="nsec"><span class="zh">销售获取完整规格 → 生产+技术验证</span><span class="en">Sales captures full spec → Production + Tech validation</span></div>
+      <div class="nown"><span class="zh">负责人: 销售 → 生产 + 技术</span><span class="en">OWNER: Sales → Production + Tech</span></div>
+    </div>
+    <div class="det">
+      <ul class="det-ul">
+        <li><span class="zh">完整规格文件（尺寸、材料、设计参数）</span><span class="en">Full spec document (dimensions, materials, design params)</span></li>
+        <li><span class="zh">客户提供现有设计文件（如有）</span><span class="en">Client provides existing design files if available</span></li>
+        <li><span class="zh">明确交货时间线期望</span><span class="en">Delivery timeline expectations confirmed</span></li>
+      </ul>
+      <button class="det-btn">📄 <span class="zh">需求录入模板（即将上线）</span><span class="en">Requirement Intake Template (coming soon)</span></button>
+    </div>
+  </div>
+  <div class="av green"><div class="al"></div><div class="ah"></div></div>
+
+  <div class="node n-a" onclick="toggle(this)">
+    <div class="ni">
+      <div class="ntag">A2</div>
+      <div class="npri"><span class="zh">规格确认</span><span class="en">Spec Confirmation</span></div>
+      <div class="nsec"><span class="zh">生产团队确认规格完整且可制造</span><span class="en">Production team confirms spec is complete and manufacturable</span></div>
+      <div class="nown"><span class="zh">负责人: 生产团队</span><span class="en">OWNER: Production Team</span></div>
+    </div>
+    <div class="det">
+      <ul class="det-ul">
+        <li><span class="zh">规格完整性检查</span><span class="en">Spec completeness check</span></li>
+        <li><span class="zh">制造可行性确认</span><span class="en">Manufacturing feasibility confirmed</span></li>
+        <li class="warn"><span class="zh">如规格不完整 → 退回销售补充</span><span class="en">If spec incomplete → return to Sales for completion</span></li>
+      </ul>
+    </div>
+  </div>
+  <div class="av green"><div class="al"></div><div class="ah"></div></div>
+
+  <div class="node n-a" onclick="toggle(this)">
+    <div class="ni">
+      <div class="ntag">A3</div>
+      <div class="npri"><span class="zh">打样可行性确认</span><span class="en">Sample Feasibility Check</span></div>
+      <div class="nsec"><span class="zh">打样前确认时间线与成本</span><span class="en">Timeline + cost confirmed before sample production</span></div>
+      <div class="nown"><span class="zh">负责人: 生产团队</span><span class="en">OWNER: Production Team</span></div>
+    </div>
+    <div class="det">
+      <ul class="det-ul">
+        <li><span class="zh">打样周期确认</span><span class="en">Sample lead time confirmed</span></li>
+        <li><span class="zh">打样成本预估</span><span class="en">Sample cost estimate</span></li>
+        <li><span class="zh">向客户发出打样报价</span><span class="en">Sample quote issued to client</span></li>
+      </ul>
+    </div>
+  </div>
+  <div class="av green"><div class="al"></div><div class="ah"></div></div>
+
+  <div class="node n-nre" onclick="toggle(this)" style="border-color:var(--gn)">
+    <div class="ni">
+      <div class="ntag" style="color:var(--gn)">A4 · <span class="zh">收费</span><span class="en">CHARGED</span></div>
+      <div class="npri"><span class="zh">打样生产</span><span class="en">Sample Production</span></div>
+      <div class="nsec"><span class="zh">始终收费 · ¥80,000–¥300,000 · 可抵首单</span><span class="en">Always charged · ¥80,000–¥300,000 · Adjustable vs first order</span></div>
+      <div class="nown" style="color:var(--gn)"><span class="zh">负责人: 生产团队</span><span class="en">OWNER: Production Team</span></div>
+    </div>
+    <div class="det">
+      <ul class="det-ul">
+        <li class="warn"><span class="zh">打样费用始终收取，绝不免费</span><span class="en">Sample fee always charged, never free</span></li>
+        <li><span class="zh">费用可在首次生产订单时抵扣</span><span class="en">Fee adjustable against first production order</span></li>
+        <li><span class="zh">打样前必须收到付款</span><span class="en">Payment received before sample production begins</span></li>
+      </ul>
+      <button class="nre-popup-btn" onclick="event.stopPropagation();showNRE()">¥ <span class="zh">查看 NRE 收费参考</span><span class="en">View NRE Fee Reference</span></button>
+    </div>
+  </div>
+  <div class="av green"><div class="al"></div><div class="ah"></div></div>
+
+  <div class="node n-a" onclick="toggle(this)">
+    <div class="ni">
+      <div class="ntag">A5</div>
+      <div class="npri"><span class="zh">报价与谈判</span><span class="en">Quotation & Negotiation</span></div>
+      <div class="nsec"><span class="zh">成本核算、报价、商务谈判</span><span class="en">Costing, quotation, commercial negotiation</span></div>
+      <div class="nown"><span class="zh">负责人: 销售 + 财务</span><span class="en">OWNER: Sales + Finance</span></div>
+    </div>
+    <div class="det">
+      <ul class="det-ul">
+        <li><span class="zh">正式报价单发出</span><span class="en">Formal quotation issued</span></li>
+        <li><span class="zh">MOQ 谈判</span><span class="en">MOQ negotiation</span></li>
+        <li><span class="zh">定价结构确认</span><span class="en">Pricing structure confirmed</span></li>
+      </ul>
+      <button class="det-btn">📄 <span class="zh">报价模板（即将上线）</span><span class="en">Quotation Template (coming soon)</span></button>
+    </div>
+  </div>
+  <div class="av green"><div class="al"></div><div class="ah"></div></div>
+
+  <div class="node n-gate" onclick="toggle(this)" style="width:420px">
+    <div class="ni">
+      <div class="ntag">A6 · <span class="zh">CEO 签署</span><span class="en">CEO SIGNS</span></div>
+      <div class="npri"><span class="zh">签订协议</span><span class="en">Agreement Signed</span></div>
+      <div class="nsec"><span class="zh">MOQ · 定价 · 交货时间线</span><span class="en">MOQ · Pricing · Delivery timeline</span></div>
+    </div>
+    <div class="det">
+      <ul class="det-ul">
+        <li><span class="zh">协议涵盖: MOQ、定价、交货时间线、付款条款</span><span class="en">Agreement covers: MOQ, pricing, delivery timeline, payment terms</span></li>
+        <li><span class="zh">CEO 签署</span><span class="en">Signed by CEO</span></li>
+        <li><span class="zh">签署后 DRI 转移至生产负责人</span><span class="en">DRI transitions to Production Head post-signing</span></li>
+      </ul>
+      <button class="det-btn or">📋 <span class="zh">生产协议模板（即将上线）</span><span class="en">Production Agreement Template (coming soon)</span></button>
+    </div>
+  </div>
+  <div class="av green"><div class="al"></div><div class="ah"></div></div>
+
+  <div class="node n-end" onclick="toggle(this)" style="width:420px">
+    <div class="ni">
+      <div class="ntag">A7 · <span class="zh">完成</span><span class="en">COMPLETE</span></div>
+      <div class="npri"><span class="zh">量产启动</span><span class="en">Production Begins</span></div>
+      <div class="nsec"><span class="zh">DRI: 生产负责人 · 持续关系: 销售</span><span class="en">DRI: Production Head · Ongoing relationship: Sales</span></div>
+      <div class="nown">⏱ <span class="zh">目标: ≤ 1 个月</span><span class="en">Target: ≤ 1 month</span></div>
+    </div>
+    <div class="det">
+      <ul class="det-ul">
+        <li class="good"><span class="zh">生产启动，进度向销售同步</span><span class="en">Production launched, progress synced to Sales</span></li>
+        <li><span class="zh">月度评审中持续跟踪</span><span class="en">Tracked in monthly portfolio review</span></li>
+      </ul>
+    </div>
+  </div>
+</div><!-- end col A -->
+
+<div style="width:56px"></div>
+
+<!-- ── PATH B ── -->
+<div class="split-col" style="width:520px">
+  <div class="split-lbl b"><span class="zh">混合通道</span><span class="en">HYBRID TRACK</span></div>
+
+  <div class="node n-b" onclick="toggle(this)">
+    <div class="ni">
+      <div class="ntag">B1</div>
+      <div class="npri"><span class="zh">销售录入 + 传递简报</span><span class="en">Sales Intake + Brief Handover</span></div>
+      <div class="nsec"><span class="zh">资质简报 → CTO/研发负责人进行技术评审</span><span class="en">Qualified brief → CTO / R&D Head for tech review</span></div>
+      <div class="nown"><span class="zh">负责人: 销售</span><span class="en">OWNER: Sales</span></div>
+    </div>
+    <div class="det">
+      <ul class="det-ul">
+        <li class="warn"><span class="zh">B 类不视为 A 类快速通道</span><span class="en">Type B is NOT treated as a fast-track A</span></li>
+        <li><span class="zh">在重新分类之前视为 C 类处理</span><span class="en">Treated as C until confirmed otherwise</span></li>
+      </ul>
+    </div>
+  </div>
+  <div class="av yellow"><div class="al"></div><div class="ah"></div></div>
+
+  <div class="node n-b" onclick="toggle(this)">
+    <div class="ni">
+      <div class="ntag">B2 · <span class="zh">5 个工作日</span><span class="en">5 BUSINESS DAYS</span></div>
+      <div class="npri"><span class="zh">内部技术评审</span><span class="en">Internal Tech Review</span></div>
+      <div class="nsec"><span class="zh">CTO/研发负责人评估技术就绪度</span><span class="en">CTO / R&D Head assessment of technical readiness</span></div>
+      <div class="nown"><span class="zh">负责人: CTO / 研发负责人</span><span class="en">OWNER: CTO / R&D Head</span></div>
+    </div>
+    <div class="det">
+      <ul class="det-ul">
+        <li><span class="zh">规格间隙分析</span><span class="en">Spec gap analysis</span></li>
+        <li><span class="zh">与 MetaRx™ 平台能力对比评估</span><span class="en">Assessment against MetaRx™ platform capabilities</span></li>
+        <li><span class="zh">输出: 建议路径 (A 或 C)</span><span class="en">Output: recommended path (A or C)</span></li>
+      </ul>
+    </div>
+  </div>
+  <div class="av yellow"><div class="al"></div><div class="ah"></div></div>
+
+  <div style="width:420px;display:flex;align-items:center;justify-content:center">
+    <div class="node n-decision" style="width:300px" onclick="toggle(this)">
+      <div class="ni">
+        <div class="npri"><span class="zh">重新分类？</span><span class="en">Re-classify as?</span></div>
+        <div class="nsec"><span class="zh">技术评审结果</span><span class="en">Tech review outcome</span></div>
+      </div>
+    </div>
+  </div>
+
+  <svg width="520" height="60" viewBox="0 0 520 60" style="overflow:visible">
+    <defs>
+      <marker id="mba" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3z" fill="#3d9970"/></marker>
+      <marker id="mbc" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3z" fill="#c0392b"/></marker>
+      <marker id="mby" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3z" fill="#e8a020"/></marker>
+    </defs>
+    <line x1="260" y1="0" x2="80" y2="30" stroke="#3d9970" stroke-width="1.5" marker-end="url(#mba)"/>
+    <line x1="260" y1="0" x2="260" y2="52" stroke="#e8a020" stroke-width="1.5" marker-end="url(#mby)"/>
+    <line x1="260" y1="0" x2="440" y2="30" stroke="#c0392b" stroke-width="1.5" marker-end="url(#mbc)"/>
+    <text x="80" y="20" text-anchor="middle" font-family="DM Mono,monospace" font-size="10" fill="#3d9970" font-weight="600">→ A</text>
+    <text x="260" y="20" text-anchor="middle" font-family="DM Mono,monospace" font-size="10" fill="#e8a020" font-weight="600">
+      <tspan class="svg-zh">混合</tspan><tspan class="svg-en">Hybrid</tspan>
+    </text>
+    <text x="440" y="20" text-anchor="middle" font-family="DM Mono,monospace" font-size="10" fill="#c0392b" font-weight="600">→ C</text>
+    <text x="80" y="48" text-anchor="middle" font-family="DM Mono,monospace" font-size="9" fill="#3d9970">
+      <tspan class="svg-zh">路由至生产通道</tspan><tspan class="svg-en">Route to Path A</tspan>
+    </text>
+    <text x="440" y="48" text-anchor="middle" font-family="DM Mono,monospace" font-size="9" fill="#c0392b">
+      <tspan class="svg-zh">路由至研发通道</tspan><tspan class="svg-en">Route to Path C</tspan>
+    </text>
+  </svg>
+
+  <div class="node n-nre" onclick="toggle(this)">
+    <div class="ni">
+      <div class="ntag">B3 · <span class="zh">收费 · 仅限混合型</span><span class="en">CHARGED · GENUINE HYBRID ONLY</span></div>
+      <div class="npri"><span class="zh">有限可行性评估</span><span class="en">Limited Feasibility Assessment</span></div>
+      <div class="nsec"><span class="zh">仅高层次 · 无模拟/设计/打样</span><span class="en">High-level only · No simulation/design/sample</span></div>
+      <div class="nown"><span class="zh">负责人: 研发 · 收费: ¥50,000–¥150,000</span><span class="en">OWNER: R&D · FEE: ¥50,000–¥150,000</span></div>
+    </div>
+    <div class="det">
+      <ul class="det-ul">
+        <li class="warn"><span class="zh">仅限高层次评估</span><span class="en">High-level assessment only</span></li>
+        <li class="bad"><span class="zh">无模拟、无设计、无打样</span><span class="en">No simulation, no design, no sample at this stage</span></li>
+        <li><span class="zh">收费后方可启动</span><span class="en">NRE payment required before work begins</span></li>
+      </ul>
+      <button class="nre-popup-btn" onclick="event.stopPropagation();showNRE()">¥ <span class="zh">查看 NRE 收费参考</span><span class="en">View NRE Fee Reference</span></button>
+    </div>
+  </div>
+  <div class="av yellow"><div class="al"></div><div class="ah"></div></div>
+
+  <div class="node n-b" onclick="toggle(this)">
+    <div class="ni">
+      <div class="ntag">B4</div>
+      <div class="npri"><span class="zh">可行性报告输出</span><span class="en">Feasibility Report Output</span></div>
+      <div class="nsec"><span class="zh">书面总结 + 推荐路径（A 或 C）</span><span class="en">Written summary + recommended path (A or C)</span></div>
+      <div class="nown"><span class="zh">负责人: CTO</span><span class="en">OWNER: CTO</span></div>
+    </div>
+    <div class="det">
+      <ul class="det-ul">
+        <li><span class="zh">书面报告发送至销售 + 客户</span><span class="en">Written report to Sales + Client</span></li>
+        <li class="good"><span class="zh">如推荐 A 类 → 进入生产通道</span><span class="en">If recommended A → enter Production Track</span></li>
+        <li class="warn"><span class="zh">如推荐 C 类 → 进入研发通道，触发关卡 1</span><span class="en">If recommended C → enter R&D Track, trigger Gate 1</span></li>
+      </ul>
+      <button class="det-btn">📄 <span class="zh">可行性报告模板（即将上线）</span><span class="en">Feasibility Report Template (coming soon)</span></button>
+    </div>
+  </div>
+</div><!-- end col B -->
+
+<div style="width:56px"></div>
+
+<!-- ── PATH C ── -->
+<div class="split-col" style="width:520px">
+  <div class="split-lbl c"><span class="zh">研发通道</span><span class="en">R&D TRACK</span></div>
+
+  <div class="node n-c" onclick="toggle(this)">
+    <div class="ni">
+      <div class="ntag">C1</div>
+      <div class="npri"><span class="zh">概念资质评估</span><span class="en">Concept Qualification</span></div>
+      <div class="nsec"><span class="zh">问题清晰度 · 价值验证 · 高层次可行性 — 无深度研究</span><span class="en">Problem clarity · Value validation · Rough feasibility — no deep work yet</span></div>
+      <div class="nown"><span class="zh">负责人: 销售 + CTO</span><span class="en">OWNER: Sales + CTO</span></div>
+    </div>
+    <div class="det">
+      <ul class="det-ul">
+        <li><span class="zh">问题是否清晰？</span><span class="en">Is the problem clearly defined?</span></li>
+        <li><span class="zh">对诺瞳平台是否有战略价值？</span><span class="en">Strategic value to Akeso platform?</span></li>
+        <li><span class="zh">高层次技术可行性（无模拟）</span><span class="en">High-level technical feasibility (no simulation)</span></li>
+        <li><span class="zh">研发带宽是否可用？</span><span class="en">R&D bandwidth available?</span></li>
+      </ul>
+    </div>
+  </div>
+  <div class="av red"><div class="al"></div><div class="ah"></div></div>
+
+  <div class="node n-gate" onclick="toggle(this)" style="width:420px">
+    <div class="ni">
+      <div class="ntag"><span class="zh">关卡 1 · CTO + 研发负责人联合决策</span><span class="en">GATE 1 · CTO + R&D HEAD JOINTLY</span></div>
+      <div class="npri"><span class="zh">研发审批</span><span class="en">R&D Approval</span></div>
+      <div class="nsec"><span class="zh">通过 / 暂缓 / 拒绝 — 联合决策</span><span class="en">Proceed / Hold / Reject — joint decision</span></div>
+      <div class="nhint">▾ <span class="zh">点击展开</span><span class="en">click to expand</span></div>
+    </div>
+    <div class="det">
+      <div class="det-2">
+        <div class="det-sec">
+          <div class="det-lbl"><span class="zh">通过标准</span><span class="en">Proceed If</span></div>
+          <ul class="det-ul">
+            <li class="good"><span class="zh">带宽可用（≤3 个客户项目）</span><span class="en">Bandwidth available (≤3 client projects active)</span></li>
+            <li class="good"><span class="zh">高层次技术可行</span><span class="en">High-level feasibility confirmed</span></li>
+            <li class="good"><span class="zh">商业信号足够强</span><span class="en">Commercial signal strong enough</span></li>
+          </ul>
+        </div>
+        <div class="det-sec">
+          <div class="det-lbl red"><span class="zh">自动拒绝</span><span class="en">Auto-Reject If</span></div>
+          <ul class="det-ul">
+            <li class="bad"><span class="zh">研发带宽已满（2–3 个客户项目）</span><span class="en">R&D bandwidth at capacity (2–3 client projects)</span></li>
+            <li class="bad"><span class="zh">高层次技术不可行</span><span class="en">Not feasible at high level</span></li>
+            <li class="bad"><span class="zh">商业信号弱</span><span class="en">Weak commercial signal</span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="det-sec" style="margin-top:8px">
+        <div class="det-lbl ye"><span class="zh">暂缓处理</span><span class="en">Hold</span></div>
+        <ul class="det-ul">
+          <li class="warn"><span class="zh">暂缓 → 记录在案 → 月度评审重新考虑</span><span class="en">Hold → logged → reconsidered at monthly portfolio review</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="av red"><div class="al"></div><div class="ah"></div></div>
+
+  <div class="node n-gate" onclick="toggle(this)" style="width:420px">
+    <div class="ni">
+      <div class="ntag"><span class="zh">阶段 2 · 正式启动前必须签署</span><span class="en">STAGE 2 · MUST SIGN BEFORE ANY REAL WORK</span></div>
+      <div class="npri"><span class="zh">商业承诺协议</span><span class="en">Commercial Commitment</span></div>
+      <div class="nsec"><span class="zh">NDA + NRE 协议 · 首笔 NRE 付款后方可开工</span><span class="en">NDA + NRE Agreement · Work starts only after first NRE payment</span></div>
+      <div class="nhint">▾ <span class="zh">点击展开</span><span class="en">click to expand</span></div>
+    </div>
+    <div class="det">
+      <div class="det-sec">
+        <div class="det-lbl"><span class="zh">协议必须包含</span><span class="en">Agreement Must Cover</span></div>
+        <ul class="det-ul">
+          <li><span class="zh">研发工作范围定义</span><span class="en">Scope of R&D work defined</span></li>
+          <li><span class="zh">NRE 费用 (¥300,000–¥1,500,000+)</span><span class="en">NRE fee (¥300,000–¥1,500,000+)</span></li>
+          <li><span class="zh">时间线与里程碑</span><span class="en">Timeline and milestones</span></li>
+          <li><span class="zh">知识产权归属条款</span><span class="en">IP ownership clause</span></li>
+          <li><span class="zh">项目终止条件</span><span class="en">Kill criteria</span></li>
+        </ul>
+      </div>
+      <button class="nre-popup-btn" onclick="event.stopPropagation();showNRE()">¥ <span class="zh">查看 NRE 收费 + IP 条款</span><span class="en">View NRE Fees + IP Terms</span></button>
+      <button class="det-btn or" style="margin-left:6px">📋 <span class="zh">NRE 协议模板（即将上线）</span><span class="en">NRE Agreement Template (coming soon)</span></button>
+    </div>
+  </div>
+  <div class="av red"><div class="al"></div><div class="ah"></div></div>
+
+  <div class="node n-c" onclick="toggle(this)">
+    <div class="ni">
+      <div class="ntag">C3 · <span class="zh">最长 3–6 个月</span><span class="en">MAX 3–6 MONTHS</span></div>
+      <div class="npri"><span class="zh">研发执行</span><span class="en">R&D Execution</span></div>
+      <div class="nsec"><span class="zh">仿真 · 设计 · 测试 · 验证 · 打样</span><span class="en">Simulation · Design · Testing · Validation · Sample</span></div>
+      <div class="nown"><span class="zh">负责人: 研发团队</span><span class="en">OWNER: R&D Team</span></div>
+    </div>
+    <div class="det">
+      <div class="det-2">
+        <div class="det-sec">
+          <div class="det-lbl"><span class="zh">执行步骤</span><span class="en">Execution Steps</span></div>
+          <ul class="det-ul">
+            <li><span class="zh">光学仿真</span><span class="en">Optical simulation</span></li>
+            <li><span class="zh">镜片设计</span><span class="en">Lens design</span></li>
+            <li><span class="zh">原型测试</span><span class="en">Prototype testing</span></li>
+            <li><span class="zh">性能验证</span><span class="en">Performance validation</span></li>
+            <li><span class="zh">打样生产（收费）</span><span class="en">Sample production (charged)</span></li>
+          </ul>
+        </div>
+        <div class="det-sec">
+          <div class="det-lbl red"><span class="zh">终止触发条件</span><span class="en">Kill Triggers</span></div>
+          <ul class="det-ul">
+            <li class="bad"><span class="zh">连续 2 次付款违约 → 自动暂停</span><span class="en">2 missed payments → pause</span></li>
+            <li class="bad"><span class="zh">30 天无回应 → 书面通知</span><span class="en">30 days no response → notice</span></li>
+            <li class="bad"><span class="zh">60 天无回应 → 终止，IP 归诺瞳</span><span class="en">60 days → terminate, IP to Akeso</span></li>
+            <li class="bad"><span class="zh">技术不可行 → CTO 终止</span><span class="en">Infeasible → CTO kills</span></li>
+            <li class="bad"><span class="zh">超出约定范围 → 变更协议或暂停</span><span class="en">Beyond scope → amend or pause</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="av red"><div class="al"></div><div class="ah"></div></div>
+
+  <div class="node n-c" onclick="toggle(this)">
+    <div class="ni">
+      <div class="ntag">C4</div>
+      <div class="npri"><span class="zh">客户验收</span><span class="en">Client Approval</span></div>
+      <div class="nsec"><span class="zh">关卡 2 之前，客户对研发成果进行验收</span><span class="en">Client approval of R&D output before Gate 2</span></div>
+      <div class="nown"><span class="zh">负责人: 销售 + 研发</span><span class="en">OWNER: Sales + R&D</span></div>
+    </div>
+    <div class="det">
+      <ul class="det-ul">
+        <li><span class="zh">客户对样品/验证结果进行评审</span><span class="en">Client reviews sample / validation results</span></li>
+        <li><span class="zh">正式书面验收</span><span class="en">Formal written approval</span></li>
+        <li class="warn"><span class="zh">如客户拒绝 → 评估是否需要追加范围（需变更协议）</span><span class="en">If client rejects → assess scope extension (requires amended agreement)</span></li>
+      </ul>
+    </div>
+  </div>
+  <div class="av red"><div class="al"></div><div class="ah"></div></div>
+
+  <div class="node n-gate" onclick="toggle(this)" style="width:420px">
+    <div class="ni">
+      <div class="ntag"><span class="zh">关卡 2 · 销售 + CTO · CEO 批准</span><span class="en">GATE 2 · SALES + CTO · CEO APPROVES</span></div>
+      <div class="npri"><span class="zh">生产决策</span><span class="en">Production Decision</span></div>
+      <div class="nsec"><span class="zh">商业可行性 · 体量承诺 · MOQ · 定价</span><span class="en">Commercial viability · Volume commitment · MOQ · Pricing</span></div>
+      <div class="nhint">▾ <span class="zh">点击展开</span><span class="en">click to expand</span></div>
+    </div>
+    <div class="det">
+      <ul class="det-ul">
+        <li class="good"><span class="zh">商业可行性确认</span><span class="en">Commercial viability confirmed</span></li>
+        <li class="good"><span class="zh">体量承诺文件化</span><span class="en">Volume commitment documented</span></li>
+        <li class="good"><span class="zh">MOQ + 年度目标达成一致</span><span class="en">MOQ + annual targets agreed</span></li>
+        <li class="good"><span class="zh">定价最终确认</span><span class="en">Pricing finalized</span></li>
+        <li class="bad"><span class="zh">无体量承诺 = 不移交生产</span><span class="en">No volume commitment = no production handover</span></li>
+      </ul>
+      <button class="det-btn or">📋 <span class="zh">生产移交协议（即将上线）</span><span class="en">Production Handover Agreement (coming soon)</span></button>
+    </div>
+  </div>
+  <div class="av red"><div class="al"></div><div class="ah"></div></div>
+
+  <div class="node n-end" onclick="toggle(this)" style="width:420px">
+    <div class="ni">
+      <div class="ntag">C5 · <span class="zh">完成</span><span class="en">COMPLETE</span></div>
+      <div class="npri"><span class="zh">移交生产团队</span><span class="en">Handover to Production</span></div>
+      <div class="nsec"><span class="zh">完整技术文档包 · DRI: 研发 → 生产</span><span class="en">Full technical package · DRI: R&D → Production</span></div>
+      <div class="nown"><span class="zh">负责人: 生产负责人</span><span class="en">OWNER: Production Head</span></div>
+    </div>
+    <div class="det">
+      <ul class="det-ul">
+        <li><span class="zh">完整技术文档包移交生产</span><span class="en">Full technical documentation package transferred to production</span></li>
+        <li><span class="zh">DRI 从研发正式转移至生产负责人</span><span class="en">DRI formally transitions from R&D to Production Head</span></li>
+        <li><span class="zh">销售持续管理客户关系</span><span class="en">Sales continues managing client relationship</span></li>
+      </ul>
+    </div>
+  </div>
+</div><!-- end col C -->
+
+</div><!-- end split-row -->
+
+<!-- CONVERGENCE -->
+<svg width="1600" height="70" viewBox="0 0 1600 70" style="overflow:visible">
+  <defs><marker id="mg2" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3z" fill="#3d9970"/></marker></defs>
+  <line x1="280" y1="0" x2="280" y2="44" stroke="#3d9970" stroke-width="1.5"/>
+  <line x1="1320" y1="0" x2="1320" y2="44" stroke="#3d9970" stroke-width="1.5"/>
+  <line x1="280" y1="44" x2="1320" y2="44" stroke="#3d9970" stroke-width="1.5"/>
+  <line x1="800" y1="44" x2="800" y2="62" stroke="#3d9970" stroke-width="2" marker-end="url(#mg2)"/>
+</svg>
+
+<div class="node n-end" onclick="toggle(this)" style="width:500px">
+  <div class="ni">
+    <div class="ntag"><span class="zh">所有通道汇合</span><span class="en">ALL PATHS CONVERGE</span></div>
+    <div class="npri"><span class="zh">量产进行中</span><span class="en">Production Ongoing</span></div>
+    <div class="nsec"><span class="zh">DRI: 生产负责人 · 客户关系: 销售</span><span class="en">DRI: Production Head · Client relationship: Sales</span></div>
+  </div>
+  <div class="det">
+    <ul class="det-ul">
+      <li><span class="zh">生产进度向销售定期同步</span><span class="en">Production progress synced to Sales regularly</span></li>
+      <li><span class="zh">月度评审中持续跟踪</span><span class="en">Tracked in monthly portfolio review</span></li>
+    </ul>
+  </div>
+</div>
+
+<div class="av grey"><div class="al"></div><div class="ah"></div></div>
+
+<div class="node n-monthly" onclick="toggle(this)" style="width:500px">
+  <div class="ni">
+    <div class="ntag"><span class="zh">每月必开 · CEO · CTO · 研发负责人 · 销售负责人</span><span class="en">MONTHLY MANDATORY · CEO · CTO · R&D HEAD · SALES HEAD</span></div>
+    <div class="npri"><span class="zh">月度项目组合评审</span><span class="en">Monthly Portfolio Review</span></div>
+    <div class="nsec"><span class="zh">终止/暂停/继续决策 · 资源分配</span><span class="en">Kill / pause / continue decisions · Resource allocation</span></div>
+    <div class="nhint">▾ <span class="zh">点击展开</span><span class="en">click to expand</span></div>
+  </div>
+  <div class="det">
+    <div class="det-sec">
+      <div class="det-lbl"><span class="zh">议程</span><span class="en">Agenda</span></div>
+      <ul class="det-ul">
+        <li><span class="zh">活跃研发项目状态（最多 2–3 个客户 + 2–3 个内部）</span><span class="en">Active R&D project status (max 2–3 client + 2–3 internal)</span></li>
+        <li><span class="zh">终止/暂停/继续决策</span><span class="en">Kill / pause / continue decisions</span></li>
+        <li><span class="zh">管道评审</span><span class="en">Pipeline review — what's coming through Gate 0</span></li>
+        <li><span class="zh">下月资源分配</span><span class="en">Resource allocation for next month</span></li>
+        <li><span class="zh">现有客户审查标记</span><span class="en">Existing client audit flags</span></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="av grey"><div class="al"></div><div class="ah"></div></div>
+
+<div class="node n-action" onclick="toggle(this)" style="width:500px">
+  <div class="ni">
+    <div class="ntag"><span class="zh">SOP 启动时运行 · 此后每年一次</span><span class="en">RUN AT SOP LAUNCH · ANNUALLY THEREAFTER</span></div>
+    <div class="npri"><span class="zh">现有客户审查</span><span class="en">Existing Client Audit</span></div>
+    <div class="nsec"><span class="zh">每客户输出: 保留 / 重组 / 退出</span><span class="en">Output per client: Keep / Restructure / Exit</span></div>
+    <div class="nhint">▾ <span class="zh">点击展开</span><span class="en">click to expand</span></div>
+  </div>
+  <div class="det">
+    <ul class="det-ul">
+      <li class="good"><span class="zh">保留 → 与 SOP 对齐</span><span class="en">Keep → align to SOP terms</span></li>
+      <li class="warn"><span class="zh">重组 → 重新协商条款</span><span class="en">Restructure → renegotiate terms</span></li>
+      <li class="bad"><span class="zh">退出 → 法律审查后方可执行</span><span class="en">Exit → legal review required before any action</span></li>
+    </ul>
+  </div>
+</div>
+
+</div><!-- end flow -->
+</div><!-- end canvas -->
+</div><!-- end view-node -->
+
+
+<!-- ═══════════════════════════════════════════════════
+     DOC VIEW (old dashboard style)
+════════════════════════════════════════════════════ -->
+<div id="view-doc">
+  <div class="doc-title">
+    <h1>客户入驻流程 <span>/</span> Client Onboarding Flow</h1>
+    <p>METARX™ LENS BUSINESS · B2B · ALL CLIENT TYPES · VERSION 1.0</p>
+  </div>
+
+  <div class="sec-lbl">核心原则 · Core Principles</div>
+  <div class="principles">
+    <div class="principle"><div class="principle-num">01</div><div class="principle-zh">无商业承诺，不启动研发</div><div class="principle-en">No R&D without commercial commitment</div></div>
+    <div class="principle"><div class="principle-num">02</div><div class="principle-zh">免费工作仅限初步可行性</div><div class="principle-en">Free work = preliminary feasibility only</div></div>
+    <div class="principle"><div class="principle-num">03</div><div class="principle-zh">研发带宽是分配资源，非无限服务</div><div class="principle-en">R&D bandwidth is allocated, not consumed</div></div>
+    <div class="principle"><div class="principle-num">04</div><div class="principle-zh">销售不得直接推进至研发</div><div class="principle-en">Sales cannot bypass directly to R&D</div></div>
+    <div class="principle"><div class="principle-num">05</div><div class="principle-zh">NRE费用不因引荐人变化</div><div class="principle-en">NRE costs don't change by who introduced client</div></div>
+    <div class="principle"><div class="principle-num">06</div><div class="principle-zh">每个项目必须有单一负责人 DRI</div><div class="principle-en">Every project requires a single DRI</div></div>
+  </div>
+
+  <div class="arr-down"><span>↓</span></div>
+
+  <div class="sec-lbl">入口筛选 · Gate 0 — Pre-Qualification</div>
+  <div class="gate-d" onclick="this.classList.toggle('open')">
+    <div class="gexp">▼</div>
+    <div class="gate-num">GATE 0 · 销售所有 SALES OWNED · 3 BUSINESS DAYS</div>
+    <div class="gate-tzh">预资格审查</div>
+    <div class="gate-ten">Pre-Qualification — Mandatory for all inquiries, no exceptions</div>
+    <div class="gate-meta">
+      <div class="gmi"><label>Owner</label><span>Sales / BD</span></div>
+      <div class="gmi"><label>Trigger</label><span>Any new client inquiry</span></div>
+      <div class="gmi"><label>Time Limit</label><span>3 business days</span></div>
+      <div class="gmi"><label>Output</label><span>Qualified Client Brief</span></div>
+    </div>
+    <div class="gde">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div>
+          <div style="font-size:10px;font-family:'DM Mono',monospace;color:var(--gr);margin-bottom:8px;letter-spacing:.08em">INTAKE CHECKLIST</div>
+          <ul class="crit-list">
+            <li>客户背景与公司信息 / Client background</li>
+            <li>产品需求描述 / Product requirement</li>
+            <li>技术就绪度 → A/B/C / Technical readiness</li>
+            <li>体量潜力 → 1/2/3 / Volume potential</li>
+            <li>NRE 付意愿 Y/N / NRE willingness</li>
+            <li>客方决策人确认 / Decision-maker</li>
+            <li>预期时间线 / Timeline</li>
+          </ul>
+        </div>
+        <div>
+          <div style="font-size:10px;font-family:'DM Mono',monospace;color:var(--rd);margin-bottom:8px;letter-spacing:.08em">AUTO-REJECT — NO ESCALATION</div>
+          <ul class="crit-list">
+            <li class="reject">Type C + Tier 3</li>
+            <li class="reject">Type C + NRE unwilling</li>
+            <li class="reject">Volume &lt;¥1M, no strategic flag</li>
+            <li class="reject">No decision-maker on client side</li>
+            <li class="reject">Timeline &lt;2 weeks, no prior engagement</li>
+            <li class="reject">Outside MetaRx™ scope</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="arr-down"><span>↓ 通过 PASS</span></div>
+
+  <div class="sec-lbl">分类矩阵 · Classification Matrix</div>
+  <div class="mat-wrap">
+    <div class="mat-title">客户分类 Type × Tier <span>Every client gets both dimensions. No exceptions.</span></div>
+    <table class="mat">
+      <thead>
+        <tr>
+          <th style="width:130px">技术就绪度</th>
+          <th class="ax">Tier 1 战略<br><span style="font-size:9px;color:var(--gr)">≥¥100M/yr</span></th>
+          <th class="ax">Tier 2 成长<br><span style="font-size:9px;color:var(--gr)">¥1M–¥100M/yr</span></th>
+          <th class="ax">Tier 3 机会型<br><span style="font-size:9px;color:var(--gr)">&lt;¥1M/yr</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="text-align:left;font-weight:600">Type A<br><span style="font-size:10px;color:var(--gr);font-family:'DM Mono',monospace">生产就绪</span></td>
+          <td class="cgo">✓ 快速通道<span class="csub">Fast Track</span></td>
+          <td class="cgo">✓ 标准通道<span class="csub">Standard</span></td>
+          <td class="cgo">✓ 标准通道<span class="csub">Standard</span></td>
+        </tr>
+        <tr>
+          <td style="text-align:left;font-weight:600">Type B<br><span style="font-size:10px;color:var(--gr);font-family:'DM Mono',monospace">待优化</span></td>
+          <td class="cgo">✓ 技术评审<span class="csub">Tech Review</span></td>
+          <td class="cwarn">⚠ 技术评审<span class="csub">Tech Review</span></td>
+          <td class="cwarn">⚠ 暂缓<span class="csub">Hold</span></td>
+        </tr>
+        <tr>
+          <td style="text-align:left;font-weight:600">Type C<br><span style="font-size:10px;color:var(--gr);font-family:'DM Mono',monospace">概念阶段</span></td>
+          <td class="cwarn">⚠ 门控评审<span class="csub">Gate Review</span></td>
+          <td class="cwarn">⚠ 门控+NRE<span class="csub">Gate + NRE Required</span></td>
+          <td class="cstop">✕ 拒绝<span class="csub">Reject</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="arr-down"><span>↓ 路由 ROUTE</span></div>
+
+  <div class="sec-lbl">路由分配 · Routing</div>
+  <div class="route-split">
+    <div class="route-item"><div class="route-type a">PATH 1 · TYPE A</div><div class="route-label">生产通道</div><div class="route-desc">Production Track — Clear specs, proven design</div></div>
+    <div class="route-item"><div class="route-type b">PATH 2 · TYPE B</div><div class="route-label">混合通道</div><div class="route-desc">Hybrid Track — Internal re-classification first</div></div>
+    <div class="route-item"><div class="route-type c">PATH 3 · TYPE C</div><div class="route-label">研发通道</div><div class="route-desc">R&D Track — Concept stage, strict gates</div></div>
+  </div>
+
+  <div class="tracks">
+    <div class="track track-a">
+      <div class="track-hdr"><div class="tbadge">PATH 1 · TYPE A</div><div class="tname-zh">生产通道</div><div class="tname-en">Production Track · All tiers · No R&D</div></div>
+      <div class="tsteps">
+        <div class="step"><div class="step-num">01</div><div><div class="step-zh">需求录入</div><div class="step-en">Requirement intake — full spec captured</div><div class="step-own">Sales → Production + Tech</div></div></div>
+        <div class="step"><div class="step-num">02</div><div><div class="step-zh">规格确认</div><div class="step-en">Spec confirmation by Production team</div><div class="step-own">Production</div></div></div>
+        <div class="step"><div class="step-num">03</div><div><div class="step-zh">打样可行性确认</div><div class="step-en">Sample feasibility — timeline + cost</div><div class="step-own">Production</div></div></div>
+        <div class="step"><div class="step-num">04</div><div><div class="step-zh">打样生产（收费）</div><div class="step-en">Sample — always charged · ¥80K–¥300K</div><div class="step-own">Production · Adjustable vs first order</div></div></div>
+        <div class="step"><div class="step-num">05</div><div><div class="step-zh">报价与谈判</div><div class="step-en">Costing, quotation, negotiation</div><div class="step-own">Sales + Finance</div></div></div>
+        <div class="step-gate-d"><div><div class="step-zh">签订协议</div><div class="step-en">Agreement — MOQ, pricing, delivery · CEO signs</div></div></div>
+        <div class="step"><div class="step-num">07</div><div><div class="step-zh">量产启动</div><div class="step-en">Production begins</div><div class="step-own">Production</div></div></div>
+      </div>
+      <div class="ttl"><div class="ttl-lbl">TARGET</div><div class="ttl-val">≤ 1 month</div></div>
+    </div>
+    <div class="track track-b">
+      <div class="track-hdr"><div class="tbadge">PATH 2 · TYPE B</div><div class="tname-zh">混合通道</div><div class="tname-en">Hybrid Track · Re-classification zone</div></div>
+      <div class="tsteps">
+        <div class="step"><div class="step-num">01</div><div><div class="step-zh">销售录入 + 简报传递</div><div class="step-en">Sales intake + brief to CTO / R&D Head</div><div class="step-own">Sales</div></div></div>
+        <div class="step"><div class="step-num">02</div><div><div class="step-zh">内部技术评审</div><div class="step-en">CTO / R&D Head assessment — 5 days</div><div class="step-own">CTO / R&D Head</div></div></div>
+        <div class="step-gate-d"><div><div class="step-zh">重新分类决策</div><div class="step-en">A → Production Track · C → R&D Track</div></div></div>
+        <div class="step"><div class="step-num">03</div><div><div class="step-zh">有限可行性（仅混合型）</div><div class="step-en">High-level only · ¥50K–¥150K NRE</div><div class="step-own">R&D</div></div></div>
+        <div class="step"><div class="step-num">04</div><div><div class="step-zh">输出可行性报告</div><div class="step-en">Written summary + recommended path</div><div class="step-own">CTO</div></div></div>
+        <div class="step-gate-d"><div><div class="step-zh">路径分配</div><div class="step-en">Route to Production or R&D Track</div></div></div>
+      </div>
+      <div class="ttl"><div class="ttl-lbl">ASSESSMENT</div><div class="ttl-val">5–10 days</div></div>
+    </div>
+    <div class="track track-c">
+      <div class="track-hdr"><div class="tbadge">PATH 3 · TYPE C</div><div class="tname-zh">研发通道</div><div class="tname-en">R&D Track · Strictest gates</div></div>
+      <div class="tsteps">
+        <div class="step"><div class="step-num">S1</div><div><div class="step-zh">概念资质评估</div><div class="step-en">Problem clarity, value, rough feasibility</div><div class="step-own">Sales + CTO · No deep work</div></div></div>
+        <div class="step-gate-red"><div><div class="step-zh">⬡ GATE 1 — 研发审批</div><div class="step-en">CTO + R&D Head: Proceed / Hold / Reject</div></div></div>
+        <div class="step"><div class="step-num">S2</div><div><div class="step-zh">商业承诺阶段</div><div class="step-en">NDA + NRE Agreement signed · ¥300K–¥1.5M+</div><div class="step-own">Scope · Fee · Timeline · IP · Kill criteria</div></div></div>
+        <div class="step"><div class="step-num">S3</div><div><div class="step-zh">研发执行</div><div class="step-en">Simulation · Design · Testing · Validation · Sample</div><div class="step-own">R&D Team · Max 3–6 months</div></div></div>
+        <div class="step"><div class="step-num">S4</div><div><div class="step-zh">客户验收</div><div class="step-en">Client approval of R&D output</div><div class="step-own">Sales + R&D</div></div></div>
+        <div class="step-gate-red"><div><div class="step-zh">⬡ GATE 2 — 生产决策</div><div class="step-en">Volume commitment · MOQ · Pricing · No volume = no handover</div></div></div>
+        <div class="step"><div class="step-num">S5</div><div><div class="step-zh">移交生产团队</div><div class="step-en">Full technical package · DRI R&D → Production</div><div class="step-own">Production</div></div></div>
+      </div>
+      <div class="ttl"><div class="ttl-lbl">MAX R&D</div><div class="ttl-val">3–6 months</div></div>
+    </div>
+  </div>
+
+  <div class="sec-lbl">终止条件 · Kill Criteria</div>
+  <div class="kill-wrap">
+    <div class="kill-title">PROJECT KILL TRIGGERS — 项目终止触发条件</div>
+    <div class="kill-grid">
+      <div class="kill-item"><div class="kill-trigger">连续2次付款违约</div><div class="kill-action">2 missed payment milestones → automatic pause</div></div>
+      <div class="kill-item"><div class="kill-trigger">30天无回应</div><div class="kill-action">30 days no response → formal written notice</div></div>
+      <div class="kill-item"><div class="kill-trigger">60天无回应</div><div class="kill-action">60 days → terminated · IP reverts to Akeso</div></div>
+      <div class="kill-item"><div class="kill-trigger">技术不可行</div><div class="kill-action">CTO calls kill · Partial NRE refund per contract</div></div>
+      <div class="kill-item"><div class="kill-trigger">超出约定资源范围</div><div class="kill-action">Scope change agreement required or pause</div></div>
+      <div class="kill-item"><div class="kill-trigger">Gate 2 无体量承诺</div><div class="kill-action">No volume at Gate 2 → no production handover</div></div>
+    </div>
+  </div>
+
+  <div class="sec-lbl">权责归属 · Ownership Map</div>
+  <div class="ownership-grid">
+    <div class="own-card"><div class="own-stage">INTAKE</div><div class="own-zh">客户录入</div><div class="own-en">Client Intake</div><div class="own-who">Sales / BD</div></div>
+    <div class="own-card"><div class="own-stage">GATE 0</div><div class="own-zh">预资格审查</div><div class="own-en">Pre-Qualification</div><div class="own-who">Sales Lead</div></div>
+    <div class="own-card"><div class="own-stage">TECH REVIEW</div><div class="own-zh">技术评审</div><div class="own-en">Type B Assessment</div><div class="own-who">CTO / R&D Head</div></div>
+    <div class="own-card"><div class="own-stage">GATE 1</div><div class="own-zh">研发审批</div><div class="own-en">R&D Approval</div><div class="own-who">CTO + R&D Head jointly</div></div>
+    <div class="own-card"><div class="own-stage">COMMERCIAL</div><div class="own-zh">商业条款</div><div class="own-en">NRE Agreement</div><div class="own-who">Sales + Finance · CEO signs</div></div>
+    <div class="own-card"><div class="own-stage">R&D EXEC</div><div class="own-zh">研发执行</div><div class="own-en">Execution</div><div class="own-who">R&D Team · R&D Head</div></div>
+    <div class="own-card"><div class="own-stage">GATE 2</div><div class="own-zh">生产决策</div><div class="own-en">Production Decision</div><div class="own-who">Sales + CTO · CEO</div></div>
+    <div class="own-card"><div class="own-stage">PRODUCTION</div><div class="own-zh">量产</div><div class="own-en">Production</div><div class="own-who">Production Head</div></div>
+    <div class="own-card"><div class="own-stage">MONTHLY</div><div class="own-zh">月度评审</div><div class="own-en">Portfolio Review</div><div class="own-who">CEO · CTO · R&D · Sales</div></div>
+  </div>
+</div><!-- end view-doc -->
+
+<footer>
+  <div>© 诺瞳 AKESO™ — 机密文件 / Confidential — 未经授权不得复制</div>
+  <div>MetaRx™ Client Onboarding SOP · v3.0</div>
+</footer>
+
+<script>
+// ── LANGUAGE ──────────────────────────────────────────
+function setLang(lang) {
+  // Remove all lang classes, set new one
+  document.body.classList.remove('lang-zh','lang-en','lang-both');
+  if(lang !== 'both') document.body.classList.add('lang-'+lang);
+  document.getElementById('btn-zh').classList.toggle('active', lang==='zh');
+  document.getElementById('btn-both').classList.toggle('active', lang==='both');
+  document.getElementById('btn-en').classList.toggle('active', lang==='en');
+}
+
+// ── VIEW ──────────────────────────────────────────────
+function setView(v) {
+  document.body.classList.toggle('view-doc', v==='doc');
+  document.getElementById('btn-node').classList.toggle('active', v==='node');
+  document.getElementById('btn-doc').classList.toggle('active', v==='doc');
+  document.getElementById('toolbar-node').style.display = v==='node' ? '' : 'none';
+}
+
+// ── NODE TOGGLE ───────────────────────────────────────
+function toggle(el) {
+  el.classList.toggle('open');
+}
+
+// ── EXPAND / COLLAPSE ALL ─────────────────────────────
+function expandAll() {
+  document.querySelectorAll('#view-node .node').forEach(n => n.classList.add('open'));
+}
+function collapseAll() {
+  document.querySelectorAll('#view-node .node').forEach(n => n.classList.remove('open'));
+}
+
+// ── ZOOM ──────────────────────────────────────────────
+let zoomLevel = 1;
+function zoom(delta) {
+  zoomLevel = Math.min(1.5, Math.max(0.4, zoomLevel + delta));
+  applyZoom();
+}
+function resetZoom() {
+  zoomLevel = 1;
+  applyZoom();
+}
+function applyZoom() {
+  document.getElementById('flow-canvas').style.transform = `scale(${zoomLevel})`;
+  document.getElementById('zoom-label').textContent = Math.round(zoomLevel*100)+'%';
+}
+
+// ── NRE MODAL ─────────────────────────────────────────
+function showNRE() {
+  document.getElementById('nre-modal').classList.add('open');
+}
+function closeNRE(e) {
+  if(e.target === document.getElementById('nre-modal'))
+    document.getElementById('nre-modal').classList.remove('open');
+}
+function closeNREBtn() {
+  document.getElementById('nre-modal').classList.remove('open');
+}
+
+// init
+setLang('both');
+setView('node');
+</script>
+</body>
+</html>
